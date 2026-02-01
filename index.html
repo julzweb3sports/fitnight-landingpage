@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fitnight</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family:'Outfit',sans-serif; background:#000; color:#fff; overflow-x:hidden; }
+        .container { max-width:1200px; margin:0 auto; padding:0 20px; }
+
+        /* Nav */
+        nav { position:fixed; top:0; width:100%; background:rgba(0,0,0,0.95); backdrop-filter:blur(10px); z-index:1000; border-bottom:1px solid rgba(255,255,255,0.1); }
+        nav .container { display:flex; align-items:center; padding:20px; gap:20px; }
+        .logo-container { display:flex; align-items:center; gap:10px; text-decoration:none; margin-right:30px; }
+        .logo-text { font-family:'Outfit',sans-serif; font-size:22px; font-weight:600; letter-spacing:-0.5px; color:#fff; }
+        nav ul { display:flex; gap:30px; list-style:none; align-items:center; margin-right:auto; }
+        nav a { color:#fff; text-decoration:none; font-weight:400; transition:opacity .3s; }
+        nav a:hover { opacity:.7; }
+        .nav-cta { padding:10px 20px; font-size:14px; font-weight:500; background:#fff; color:#000; border:none; cursor:pointer; font-family:'Outfit',sans-serif; text-decoration:none; transition:all .3s; display:inline-block; }
+        .nav-cta:hover { box-shadow:0 6px 20px rgba(255,255,255,.2); }
+        .lang-switcher { display:flex; gap:6px; }
+        .lang-btn { background:none; border:1px solid rgba(255,255,255,.3); color:#fff; padding:6px 12px; cursor:pointer; font-family:'Outfit',sans-serif; font-size:14px; transition:all .3s; border-radius:4px; }
+        .lang-btn:hover { border-color:#fff; }
+        .lang-btn.active { background:#fff; color:#000; border-color:#fff; }
+
+        /* Tooltip styles */
+        .tip { position:relative; display:inline-block; }
+        .tip .tip-text {
+            visibility:hidden;
+            opacity:0;
+            background:#222;
+            color:#fff;
+            font-size:12px;
+            font-weight:500;
+            white-space:nowrap;
+            padding:6px 12px;
+            border-radius:6px;
+            position:absolute;
+            bottom:calc(100% + 10px);
+            left:50%;
+            transform:translateX(-50%);
+            transition:opacity .2s ease, visibility .2s ease;
+            z-index:9999;
+            pointer-events:none;
+        }
+        .tip .tip-text::after {
+            content:'';
+            position:absolute;
+            top:100%;
+            left:50%;
+            transform:translateX(-50%);
+            border:5px solid transparent;
+            border-top-color:#222;
+        }
+        .tip:hover .tip-text {
+            visibility:visible;
+            opacity:1;
+        }
+
+        /* Hero */
+        .hero { min-height:100vh; display:flex; align-items:center; justify-content:center; text-align:center; padding-top:80px; }
+        .hero h1 { font-size:72px; font-weight:700; line-height:1.1; margin-bottom:24px; letter-spacing:-2px; }
+        .hero .subtitle { font-size:24px; font-weight:300; margin-bottom:40px; opacity:.8; }
+        .powered-by { display:inline-block; font-size:14px; opacity:.6; margin-bottom:40px; padding:8px 16px; border:1px solid rgba(255,255,255,.2); border-radius:20px; }
+        .cta-buttons { display:flex; gap:20px; justify-content:center; flex-wrap:wrap; }
+        .btn { padding:16px 32px; font-size:16px; font-weight:500; border:none; cursor:pointer; transition:all .3s; font-family:'Outfit',sans-serif; text-decoration:none; display:inline-block; }
+        .btn-primary { background:#fff; color:#000; }
+        .btn-primary:hover { transform:translateY(-2px); box-shadow:0 10px 30px rgba(255,255,255,.2); }
+        .btn-secondary { background:transparent; color:#fff; border:1px solid #fff; }
+        .btn-secondary:hover { background:#fff; color:#000; }
+
+        /* Sections */
+        section { padding:120px 0; }
+        h2 { font-size:48px; font-weight:700; margin-bottom:60px; text-align:center; letter-spacing:-1px; }
+
+        /* Problem */
+        .problem { background:#0a0a0a; }
+        .problem-content { max-width:800px; margin:0 auto; text-align:center; }
+        .problem p { font-size:20px; line-height:1.8; opacity:.9; }
+
+        /* Solutions */
+        .solutions-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:40px; margin-top:60px; }
+        .solution-card { background:#0a0a0a; border:1px solid rgba(255,255,255,.1); padding:40px; transition:all .3s; }
+        .solution-card:hover { border-color:rgba(255,255,255,.3); transform:translateY(-5px); }
+        .solution-number { font-size:14px; opacity:.5; margin-bottom:20px; }
+        .solution-card h3 { font-size:24px; font-weight:600; margin-bottom:16px; }
+        .solution-card p { font-size:16px; line-height:1.6; opacity:.8; }
+
+        /* One Tool */
+        .one-tool { background:#000; }
+        .one-tool-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(400px,1fr)); gap:40px; margin-top:60px; }
+
+        /* Features */
+        .features-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:40px; margin-top:60px; }
+        .feature-card { text-align:center; padding:40px 20px; }
+        .feature-icon { width:60px; height:60px; margin:0 auto 24px; border:2px solid rgba(255,255,255,.3); border-radius:50%; display:flex; align-items:center; justify-content:center; transition:all .3s; }
+        .feature-icon svg { width:24px; height:24px; stroke:#fff; fill:none; stroke-width:2; }
+        .feature-card:hover .feature-icon { border-color:#fff; transform:scale(1.1); box-shadow:0 0 20px rgba(255,255,255,.3); }
+        .feature-card h3 { font-size:20px; font-weight:600; margin-bottom:12px; }
+        .feature-card p { font-size:14px; opacity:.7; line-height:1.6; }
+
+        /* Vision */
+        .our-vision { background:#0a0a0a; }
+        .vision-content { max-width:800px; margin:0 auto; text-align:center; }
+        .vision-content p { font-size:18px; line-height:1.8; opacity:.9; margin-bottom:24px; }
+
+        /* How it Works */
+        .how-it-works { background:#0a0a0a; }
+        .steps { display:flex; flex-direction:column; gap:60px; max-width:800px; margin:60px auto 0; }
+        .step { display:flex; gap:40px; align-items:start; }
+        .step-number { font-size:48px; font-weight:700; opacity:.2; min-width:80px; }
+        .step-content h3 { font-size:24px; font-weight:600; margin-bottom:12px; }
+        .step-content p { font-size:16px; opacity:.8; line-height:1.6; }
+
+        /* CTA */
+        .cta-section { text-align:center; background:#fff; color:#000; }
+        .cta-section h2 { color:#000; }
+        .cta-section p { font-size:20px; margin-bottom:40px; opacity:.7; }
+        .cta-section .btn-primary { background:#000; color:#fff; }
+        .cta-section .btn-primary:hover { box-shadow:0 10px 30px rgba(0,0,0,.3); }
+
+        /* Footer */
+        footer { padding:60px 0 40px; border-top:1px solid rgba(255,255,255,.1); }
+        .footer-content { display:flex; justify-content:space-between; margin-bottom:40px; flex-wrap:wrap; gap:40px; }
+        .footer-section h4 { font-size:16px; font-weight:600; margin-bottom:20px; }
+        .footer-section a { display:block; color:#fff; text-decoration:none; opacity:.6; margin-bottom:12px; transition:opacity .3s; }
+        .footer-section a:hover { opacity:1; }
+        .footer-bottom { text-align:center; padding-top:40px; border-top:1px solid rgba(255,255,255,.1); opacity:.5; font-size:14px; }
+
+        /* Responsive */
+        @media (max-width:768px) {
+            nav ul { display:none; }
+            .hero h1 { font-size:48px; }
+            .hero .subtitle { font-size:18px; }
+            h2 { font-size:36px; }
+            .solutions-grid, .features-grid, .one-tool-grid { grid-template-columns:1fr; }
+            .step { flex-direction:column; gap:20px; }
+            .step-number { min-width:auto; }
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+    <div class="container">
+        <a href="#" class="logo-container">
+            <span class="logo-text">fitnight</span>
+        </a>
+        <ul>
+            <li><a href="#vision">Our Vision</a></li>
+            <li><a href="#solutions">Solutions</a></li>
+            <li><a href="#how-it-works">How it Works</a></li>
+            <li><a href="#contact">Contact</a></li>
+        </ul>
+        <span class="tip"><span class="tip-text">🚧 under construction</span><a href="#" class="nav-cta">Launch Web-App</a></span>
+        <div class="lang-switcher">
+            <button class="lang-btn" data-lang="de">DE</button>
+            <button class="lang-btn active" data-lang="en">EN</button>
+        </div>
+    </div>
+</nav>
+
+<section class="hero">
+    <div class="container">
+        <div class="powered-by">Powered by Midnight Blockchain</div>
+        <h1>The Future of<br>Gym Memberships</h1>
+        <p class="subtitle">NFT-based access solutions with maximum privacy.<br>For studios and members.</p>
+        <div class="cta-buttons">
+            <span class="tip"><span class="tip-text">🚧 under construction</span><a href="#contact" class="btn btn-primary">Get Started</a></span>
+            <span class="tip"><span class="tip-text">🚧 under construction</span><a href="#how-it-works" class="btn btn-secondary">Learn More</a></span>
+        </div>
+    </div>
+</section>
+
+<section class="problem">
+    <div class="container">
+        <div class="problem-content">
+            <h2>The Problem</h2>
+            <p>Traditional membership systems are based on outdated intranet architecture. They are vulnerable to data leaks, inflexible, and offer neither studios nor members the control they deserve.</p>
+        </div>
+    </div>
+</section>
+
+<section id="solutions">
+    <div class="container">
+        <h2>Three Paths to More Freedom</h2>
+        <div class="solutions-grid">
+            <div class="solution-card">
+                <div class="solution-number">01</div>
+                <h3>Fitnight Aggregator</h3>
+                <p>Buy a Fitnight NFT and train at all partner studios. One membership, unlimited possibilities.</p>
+            </div>
+            <div class="solution-card">
+                <div class="solution-number">02</div>
+                <h3>Daypass Service</h3>
+                <p>Spontaneous workout? Scan the QR code, pay with your preferred cryptocurrency, and get instant access. Completely anonymous.</p>
+            </div>
+            <div class="solution-card">
+                <div class="solution-number">03</div>
+                <h3>Studio-owned NFTs</h3>
+                <p>Create your own memberships in our no-code interface. Sell them as NFTs with optional resale functionality.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="one-tool">
+    <div class="container">
+        <h2>One Tool to start the Revolution</h2>
+        <div class="one-tool-grid">
+            <div class="solution-card">
+                <h3>For Customers</h3>
+                <p>Download the Fitnight App and start right away. Buy and trade Aggregator Memberships, purchase memberships or services from a specific gym or simply get a Day Pass and train.</p>
+            </div>
+            <div class="solution-card">
+                <h3>For Businesses</h3>
+                <p>To offer our payment structure to your customers, simply open the Web-App. Choose between offering Day Passes, create your Custom memberships in a No-Code interface or become part of our Aggregator network.</p>
+                <span class="tip" style="display:inline-block;margin-top:24px;"><span class="tip-text">🚧 under construction</span><a href="#" class="btn btn-primary">Launch App</a></span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="features">
+    <div class="container">
+        <h2>Why Fitnight?</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                </div>
+                <h3>Maximum Privacy</h3>
+                <p>Zero-knowledge proofs only show whether you're a member – without revealing personal data.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                </div>
+                <h3>Anonymous Transactions</h3>
+                <p>Pay and receive payments in crypto – no tracking, no intermediaries.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <svg viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+                </div>
+                <h3>Tradeable Memberships</h3>
+                <p>Sell your membership when you no longer need it. Full flexibility.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                </div>
+                <h3>Instant Check-In</h3>
+                <p>Scan NFT, verify, train. In seconds.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="our-vision" id="vision">
+    <div class="container">
+        <h2>Our Vision</h2>
+        <div class="vision-content">
+            <p>We believe in the power of interpersonal relationships and trust. Especially among athletes.</p>
+            <p>Our private information is our most important asset. And yet we voluntarily hand it over to large corporations and data brokers.</p>
+            <p>Fitnight helps companies become less dependent on traditional payment methods while strengthening the privacy of their members.</p>
+            <p>Companies deserve to be independent of the constant inflation of all FIAT currencies.</p>
+            <p>Customers should have the fundamental right to only have to disclose their membership status. No one should be interested in how often someone checks in, what their cell phone number is, or where they live.</p>
+            <p>It's time to rethink. And to only share information with the people we like and who act in our best interests.</p>
+            <p style="font-weight:600; margin-top:40px;">Join our movement today and reclaim what is rightfully ours: Independence.</p>
+        </div>
+    </div>
+</section>
+
+<section id="how-it-works" class="how-it-works">
+    <div class="container">
+        <h2>How it Works</h2>
+        <div class="steps">
+            <div class="step">
+                <div class="step-number">01</div>
+                <div class="step-content">
+                    <h3>Acquire or create NFT</h3>
+                    <p>Choose between Fitnight Aggregator, Daypass, or create your own studio memberships.</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-number">02</div>
+                <div class="step-content">
+                    <h3>Store in Wallet</h3>
+                    <p>Your NFT membership is securely stored in your Midnight wallet.</p>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-number">03</div>
+                <div class="step-content">
+                    <h3>Scan & Train</h3>
+                    <p>Show your NFT at check-in. The system verifies your validity in real-time – without storing your data.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="cta-section">
+    <div class="container">
+        <h2>Ready for the Future?</h2>
+        <p>Start now with Fitnight and revolutionize your gym.</p>
+        <span class="tip"><span class="tip-text">💬 TG: fitnighthead</span><a href="#contact" class="btn btn-primary">Get in Touch</a></span>
+    </div>
+</section>
+
+<footer id="contact">
+    <div class="container">
+        <div class="footer-bottom" style="border-top:none; padding-top:0;">
+            <p>&copy; 2026 Fitnight. Powered by Midnight Blockchain.</p>
+        </div>
+    </div>
+</footer>
+
+</body>
+</html>
